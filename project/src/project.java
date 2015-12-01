@@ -108,7 +108,8 @@ public class project extends MIDlet implements ActionListener {
                 id_no = txtIDNo.getText().trim();
                 //check if the values are empty
                 if (first_name.equals("") || last_name.equals("") || id_no.equals("")) {
-
+                     //  txtaValidate.setText("Please fill all fields");
+                       //validate.show(70,70,10,10,true);
                 } else {
                     String LoginURL = "http://localhost/project/register1.php?first_name="
                             + first_name + "&last_name=" + last_name + "&id_no=" + id_no;
@@ -116,8 +117,7 @@ public class project extends MIDlet implements ActionListener {
                     String registerResponse = dbfunction(LoginURL);
                     int resp = Integer.parseInt(registerResponse);
                     if (resp == 1) {
-                        //txtaValidate.setText("Please fill all fields");
-                        //validate.show(70,70,10,10,true);
+                        
                         ShowRegister2();
                     } else {
                         //alert the user that username and password on't match
@@ -167,8 +167,8 @@ public class project extends MIDlet implements ActionListener {
                 //check if password match
                 if (password.equals(RetypePwd)) {
                     //send to database
-                    String registerURL = "http://localhost/project/register2.php?email_address="
-                            + email_address + "&password=" + password + "&phone_number=" + phone_number;
+                    String registerURL = "http://localhost/project/register2.php?email_address="+
+                            email_address+"&password="+password+"&phone_number="+phone_number+"&id_no="+id_no;
                     //call the dbfunction method
                     String registerResponse = dbfunction(registerURL);
                     int resp = Integer.parseInt(registerResponse);
