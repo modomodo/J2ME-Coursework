@@ -157,6 +157,7 @@ public class project extends MIDlet implements ActionListener {
         btnRegisterR = new Button("Register");
         btnRegisterR.addActionListener(new ActionListener() {
 
+            //iuiuiuiu
             public void actionPerformed(ActionEvent ae) {
                 //get the values entered
                 email_address = txtEmailAddr.getText().trim();
