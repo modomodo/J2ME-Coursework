@@ -233,6 +233,9 @@ public class adminpolice extends MIDlet implements ActionListener {
     }
 
     private void ShowDL() {
+        String drivingLicenseURL = "http://localhost/mbank/services.php";
+        String ServicesResponse = dbfunction(drivingLicenseURL);
+        String[] ServicesArray = split(ServicesResponse, '#');
         frmDl = new Form("Driving License");
         txtaDl = new TextArea(10, 20, TextArea.UNEDITABLE);
         txtaDl.setEditable(false);

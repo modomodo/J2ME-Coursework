@@ -11,6 +11,7 @@ import com.sun.lwuit.Dialog;
 import com.sun.lwuit.Display;
 import com.sun.lwuit.Form;
 import com.sun.lwuit.Label;
+import com.sun.lwuit.List;
 import com.sun.lwuit.TextArea;
 import com.sun.lwuit.TextField;
 import com.sun.lwuit.events.ActionEvent;
@@ -36,10 +37,10 @@ public class project extends MIDlet implements ActionListener {
     Command cmdExit, cmdNext, cmdBack, cmdRegister, cmdOk;
     TextField txtRegNu, txtpwd, txtFirstName, txtLastName, txtIDNo, txtEmailAddr, txtPhoneNo, txtPwdR, txtRetypePwd;
     Button btnLogin, btnRegister, btnNext, btnSummary, btnDL, btnInsuaranceDetails, btnOffences, btnUpdates, btnRegisterR;
-    String first_name, last_name, id_no, email_address, password, phone_number, RetypePwd;
+    String first_name, last_name, id_no, email_address, password, phone_number, RetypePwd,regno, regnoL, pawdL;
     Dialog success, validate, error1, error2;
     TextArea txtaValidate, txtasuccess, txtaerror1, txtaerror2, txtaSummary, txtaDl, txtaInsurance, txtaOffences, txtaUpdates;
-
+    List LsDl;
     public void startApp() {
         Display.init(this);
         try {
@@ -84,11 +85,31 @@ public class project extends MIDlet implements ActionListener {
         btnLogin.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                txtasuccess.setText("you've logged in successfully");
-                success.setTimeout(1000);
-                success.show(70,70,10,10,true);
-                ShowMenu();
+                regnoL = txtRegNu.getText().trim();
+                pawdL = txtpwd.getText().trim();
+                if (regnoL.equals("") || pawdL.equals("")){
+                      txtaValidate.setText("Please fill all fields");
+                      validate.setTimeout(1000);
+                      validate.show(70,70,10,10,true);
+                } else {
+                    String RegisterURL = "http://localhost/project/login.php?id_no="+
+                            regnoL+"&pawd="+pawdL;
+                    // System.out.println(" first "+first_name+"  last "+last_name+" id "+id_no);
+                    String registerResponse = dbfunction(RegisterURL);
+                    int resp = Integer.parseInt(registerResponse);
+                    if (resp == 1) { 
+                      txtasuccess.setText("you've logged in successfully");
+                       success.setTimeout(1000);
+                     success.show(70,70,10,10,true);
+                      ShowMenu();
+                    }else {
+                        txtaerror1.setText("wrong details");
+                      error1.setTimeout(1000);
+                      error1.show(70,70,10,10,true);
+                }
+                }
             }
+                     
         });
         btnRegister = new Button("Register");
         btnRegister.addActionListener(new ActionListener() {
@@ -109,6 +130,8 @@ public class project extends MIDlet implements ActionListener {
         frmLogin.show();
     }
     //register 1
+    
+    
 
     private void ShowRegister1() {
         frmRegister1 = new Form("Register");
@@ -295,8 +318,17 @@ public class project extends MIDlet implements ActionListener {
     }
 
     private void ShowDL() {
+        regno = txtRegNu.getText().trim();
+        String drivingLicenseURL = "http://localhost/project/getDrivingLicense.php?id_no="+regno;
+        String ServicesResponse = dbfunction(drivingLicenseURL);
+        String[] ServicesArray = split(ServicesResponse, '#');
+       // LsDl = new List(ServicesArray);
+
+        
         frmDl = new Form("Driving License");
         txtaDl = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaDl.setText("Reference No: " + ServicesArray[0] + "ID No: " + ServicesArray[1]
+                + "Class: " + ServicesArray[2] + "Registration No: " + ServicesArray[3]);
         txtaDl.setEditable(false);
         frmDl.addComponent(txtaDl);
         cmdBack = new Command("Back");
@@ -361,15 +393,15 @@ public class project extends MIDlet implements ActionListener {
             if (ae.getSource() == cmdBack && current == frmRegister2) {
                 frmRegister1.show();
             }else if (ae.getSource() == cmdBack && current == frmDl) {
-            frmMenu.show();
+            ShowMenu();
         } else if (ae.getSource() == cmdBack && current == frmSummary) {
-            frmMenu.show();
+            ShowMenu();
         } else if (ae.getSource() == cmdBack && current == frmInsurance) {
-            frmMenu.show();
+            ShowMenu();
         }else if (ae.getSource() == cmdBack && current == frmUpdates) {
-            frmMenu.show();
+            ShowMenu();
         }else if (ae.getSource() == cmdBack && current == frmOffences) {
-            frmMenu.show();
+            ShowMenu();
         }
             
 
