@@ -32,13 +32,13 @@ import javax.microedition.midlet.*;
  */
 public class project extends MIDlet implements ActionListener {
 
-    Form current, frmLogin, frmRegister1, frmRegister2, frmMenu;
+    Form current, frmLogin, frmRegister1, frmRegister2, frmMenu, frmSummary, frmDl, frmInsurance, frmOffences, frmUpdates;
     Command cmdExit, cmdNext, cmdBack, cmdRegister, cmdOk;
     TextField txtRegNu, txtpwd, txtFirstName, txtLastName, txtIDNo, txtEmailAddr, txtPhoneNo, txtPwdR, txtRetypePwd;
     Button btnLogin, btnRegister, btnNext, btnSummary, btnDL, btnInsuaranceDetails, btnOffences, btnUpdates, btnRegisterR;
     String first_name, last_name, id_no, email_address, password, phone_number, RetypePwd;
-    Dialog alwarn, validate;
-    TextArea txtaValidate;
+    Dialog success, validate, error1, error2;
+    TextArea txtaValidate, txtasuccess, txtaerror1, txtaerror2, txtaSummary, txtaDl, txtaInsurance, txtaOffences, txtaUpdates;
 
     public void startApp() {
         Display.init(this);
@@ -55,11 +55,26 @@ public class project extends MIDlet implements ActionListener {
         cmdOk = new Command("OK", 0);
         txtaValidate = new TextArea();
         txtaValidate.setEditable(false);
+        txtasuccess = new TextArea();
+        txtasuccess.setEditable(false);
+        txtaerror1 = new TextArea();
+        txtaerror1.setEditable(false);
+        txtaerror2 = new TextArea();
+        txtaerror2.setEditable(false);
 
         validate = new Dialog("validate");
         validate.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         validate.addComponent(txtaValidate);
         validate.addCommand(cmdOk);
+        success = new Dialog("success");
+        success.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+        success.addComponent(txtasuccess);
+        error1 = new Dialog("success");
+        error1.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+        error1.addComponent(txtaerror1);
+        error2 = new Dialog("success");
+        error2.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+        error2.addComponent(txtaerror2);
 
         frmLogin.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         txtpwd = new TextField("", 20);
@@ -69,6 +84,9 @@ public class project extends MIDlet implements ActionListener {
         btnLogin.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
+                txtasuccess.setText("you've logged in successfully");
+                success.setTimeout(1000);
+                success.show(70,70,10,10,true);
                 ShowMenu();
             }
         });
@@ -108,20 +126,23 @@ public class project extends MIDlet implements ActionListener {
                 id_no = txtIDNo.getText().trim();
                 //check if the values are empty
                 if (first_name.equals("") || last_name.equals("") || id_no.equals("")) {
-                     //  txtaValidate.setText("Please fill all fields");
-                       //validate.show(70,70,10,10,true);
+                      txtaValidate.setText("Please fill all fields");
+                      validate.setTimeout(1000);
+                      validate.show(70,70,10,10,true);
+                    
                 } else {
-                    String LoginURL = "http://localhost/project/register1.php?first_name="
+                    String RegisterURL = "http://localhost/project/register1.php?first_name="
                             + first_name + "&last_name=" + last_name + "&id_no=" + id_no;
                     // System.out.println(" first "+first_name+"  last "+last_name+" id "+id_no);
-                    String registerResponse = dbfunction(LoginURL);
+                    String registerResponse = dbfunction(RegisterURL);
                     int resp = Integer.parseInt(registerResponse);
                     if (resp == 1) {
-                        
+                      
                         ShowRegister2();
                     } else {
-                        //alert the user that username and password on't match
-                        // System.out.println("The username and password dont match");
+                        txtaerror1.setText("wrong details");
+                      error1.setTimeout(1000);
+                      error1.show(70,70,10,10,true);
 
                     }
                 }
@@ -164,8 +185,12 @@ public class project extends MIDlet implements ActionListener {
                 phone_number = txtPhoneNo.getText().trim();
                 password = txtPwdR.getText().trim();
                 RetypePwd = txtRetypePwd.getText().trim();
+                if (email_address.equals("") || phone_number.equals("") || password.equals("") || RetypePwd.equals("")) {
+                      txtaerror2.setText("Please fill all fields");
+                      error2.setTimeout(1000);
+                      error2.show(70,70,10,10,true);
                 //check if password match
-                if (password.equals(RetypePwd)) {
+                }else if (password.equals(RetypePwd)) {
                     //send to database
                     String registerURL = "http://localhost/project/register2.php?email_address="+
                             email_address+"&password="+password+"&phone_number="+phone_number+"&id_no="+id_no;
@@ -174,15 +199,18 @@ public class project extends MIDlet implements ActionListener {
                     int resp = Integer.parseInt(registerResponse);
                     if (resp == 1) {
                         //send the user to login form
-                        frmLogin.show();
+                      txtaValidate.setText("you've registered successfully");
+                      validate.setTimeout(1000);
+                      validate.show(70,70,10,10,true);
+                      frmLogin.show();
                     } else {
-                        //alert "registration failed"  
-                        //System.out.println("Failed");
+                        txtaerror2.setText("Kindly try later");
+                      error2.setTimeout(1000);
+                      error2.show(70,70,10,10,true);
 
                     }
 
-                }
-
+            }
             }
         });
         Container conRegister = new Container(new BoxLayout(BoxLayout.Y_AXIS));
@@ -207,7 +235,7 @@ public class project extends MIDlet implements ActionListener {
 
     //menu
     private void ShowMenu() {
-        frmMenu = new Form("Welcome");
+        frmMenu = new Form("MENU");
         frmMenu.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         btnSummary = new Button("Summary");
         btnSummary.addActionListener(new ActionListener() {
@@ -256,23 +284,58 @@ public class project extends MIDlet implements ActionListener {
     }
 
     private void ShowSummary() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        frmSummary = new Form("Summary");
+        txtaSummary = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaSummary.setEditable(false);
+        frmSummary.addComponent(txtaSummary);
+        cmdBack = new Command("Back");
+        frmSummary.addCommand(cmdBack);
+        frmSummary.addCommandListener(this);
+        frmSummary.show();
     }
 
     private void ShowDL() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        frmDl = new Form("Driving License");
+        txtaDl = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaDl.setEditable(false);
+        frmDl.addComponent(txtaDl);
+        cmdBack = new Command("Back");
+        frmDl.addCommand(cmdBack);
+        frmDl.addCommandListener(this);
+        frmDl.show();
     }
 
     private void ShowInsuaranceDetails() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        frmInsurance = new Form("Insurance Details");
+        txtaInsurance = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaInsurance.setEditable(false);
+        frmInsurance.addComponent(txtaInsurance);
+        cmdBack = new Command("Back");
+        frmInsurance.addCommand(cmdBack);
+        frmInsurance.addCommandListener(this);
+        frmInsurance.show();
     }
 
     private void ShowOffences() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        frmOffences = new Form("Offences");
+        txtaOffences = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaOffences.setEditable(false);
+        frmOffences.addComponent(txtaOffences);
+        cmdBack = new Command("Back");
+        frmOffences.addCommand(cmdBack);
+        frmOffences.addCommandListener(this);
+        frmOffences.show();
     }
 
     private void ShowUpdates() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        frmUpdates = new Form("Updates");
+        txtaUpdates = new TextArea(10, 20, TextArea.UNEDITABLE);
+        txtaUpdates.setEditable(false);
+        frmUpdates.addComponent(txtaUpdates);
+        cmdBack = new Command("Back");
+        frmUpdates.addCommand(cmdBack);
+        frmUpdates.addCommandListener(this);
+        frmUpdates.show();
     }
 
     public void pauseApp() {
@@ -290,18 +353,27 @@ public class project extends MIDlet implements ActionListener {
         if (ae.getSource() == cmdBack && current == frmRegister1) {
             frmLogin.show();
 
-            if (ae.getSource() == btnLogin && current == frmLogin) {
+            }if (ae.getSource() == btnLogin && current == frmLogin) {
                 frmMenu.show();
+            }else if (ae.getSource() == cmdBack && current == frmMenu) {
+            frmLogin.show();
             }
             if (ae.getSource() == cmdBack && current == frmRegister2) {
                 frmRegister1.show();
-            }
-            if (ae.getSource() == cmdBack && current == frmMenu) {
-                frmLogin.show();
-            }
-
+            }else if (ae.getSource() == cmdBack && current == frmDl) {
+            frmMenu.show();
+        } else if (ae.getSource() == cmdBack && current == frmSummary) {
+            frmMenu.show();
+        } else if (ae.getSource() == cmdBack && current == frmInsurance) {
+            frmMenu.show();
+        }else if (ae.getSource() == cmdBack && current == frmUpdates) {
+            frmMenu.show();
+        }else if (ae.getSource() == cmdBack && current == frmOffences) {
+            frmMenu.show();
         }
-    }
+            
+
+            }
 
     private String dbfunction(String createaccountURL) {
 
